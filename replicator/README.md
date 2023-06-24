@@ -4,8 +4,8 @@ https://docs.confluent.io/cloud/current/clusters/migrate-topics-on-cloud-cluster
 
 ## Build and push the docker image
 ```bash
-docker build -t naturalintelligence/cp-enterprise-replicator-executable:7.4.0 .
-docker push naturalintelligence/cp-enterprise-replicator-executable:7.4.0
+docker build -t naturalett/cp-enterprise-replicator-executable:7.4.0 .
+docker push naturalett/cp-enterprise-replicator-executable:7.4.0
 ```
 
 ## Create the configuration as a secret
@@ -70,7 +70,7 @@ spec:
       containers:
         - name: confluent-replicator
           imagePullPolicy: IfNotPresent
-          image: naturalintelligence/cp-enterprise-replicator-executable:7.4.0
+          image: naturalett/cp-enterprise-replicator-executable:7.4.0
           resources:
             limits:
               cpu: "2"
