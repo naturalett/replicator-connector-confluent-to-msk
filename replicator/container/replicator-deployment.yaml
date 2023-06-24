@@ -1,0 +1,51 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: repl-exec-connect-cluster
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: replicator-app
+    spec:
+      containers:
+        - name: confluent-replicator
+          imagePullPolicy: IfNotPresent
+          image: naturalett/cp-enterprise-replicator-executable:7.4.0
+          resources:
+            limits:
+              cpu: "2"
+              memory: 5Gi
+            requests:
+              cpu: "2"
+              memory: 5Gi
+          env:
+            - name: CLUSTER_ID
+              value: "replicator-k8s"
+            - name: CLUSTER_THREADS
+              value: "1"
+            - name: CONNECT_GROUP_ID
+              value: "containerized-repl"
+            - name: KAFKA_HEAP_OPTS
+              value: "-Xms2048M -Xmx4096M"
+
+            - name: KAFKA_OPTS
+              value: "-Djava.security.auth.login.config=/etc/replicator-config/jaas.conf"
+
+              # Note: This is to avoid _overlay errors_ . You could use /etc/replicator/ here instead.
+            - name: REPLICATION_CONFIG
+              value: "/etc/replicator-config/replication.properties"
+            - name: PRODUCER_CONFIG
+              value: "/etc/replicator-config/producer.properties"
+            - name: CONSUMER_CONFIG
+              value: "/etc/replicator-config/consumer.properties"
+          volumeMounts:
+            - name: replicator-properties
+              mountPath: /etc/replicator-config/
+      volumes:
+        - name: replicator-properties
+          secret:
+            secretName: "replicator-secret-props"
+            defaultMode: 0666
