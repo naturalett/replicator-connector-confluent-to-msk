@@ -10,12 +10,12 @@ docker push naturalett/cp-enterprise-replicator-executable:7.4.0
 
 ## Create the configuration as a secret
 ```bash
-export CONNECTOR=test-topic
+export TOPIC=test-topic
 ```
 
 ## Generate the replication.properties
 ```bash
-cat replicator/secrets-tpl/replication.properties.tpl | sed -e "s/CONNECTOR/${CONNECTOR}/" > replicator/secrets/replication.properties
+cat replicator/secrets-tpl/replication.properties.tpl | sed -e "s/TOPIC/${TOPIC}/" > replicator/secrets/replication.properties
 ```
 
 ## Generate the producer.properties
@@ -38,7 +38,7 @@ cat replicator/secrets-tpl/consumer.properties.tpl | sed -e "s/BOOTSTRAP_SERVERS
 ## Create the configuration secrets
 
 ```bash
-kubectl create secret generic replicator-secret-props-${CONNECTOR} --from-file=replicator/secrets/ --namespace default
+kubectl create secret generic replicator-secret-props-${TOPIC} --from-file=replicator/secrets/ --namespace default
 ```
 
 ## Create the deployment
@@ -49,7 +49,7 @@ cat <<EOF | kubectl create -f -
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: repl-exec-connect-cluster-${CONNECTOR}
+  name: repl-exec-connect-cluster-${TOPIC}
   namespace: default
 spec:
   replicas: 1
@@ -58,15 +58,6 @@ spec:
       labels:
         app: replicator-app
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: kubernetes.io/hostname
-                operator: In
-                values:
-                - ip-10-18-87-90.ec2.internal
       containers:
         - name: confluent-replicator
           imagePullPolicy: IfNotPresent
@@ -104,7 +95,7 @@ spec:
       volumes:
         - name: replicator-properties
           secret:
-            secretName: "replicator-secret-props-${CONNECTOR}"
+            secretName: "replicator-secret-props-${TOPIC}"
             defaultMode: 0666
 
 EOF
@@ -112,5 +103,5 @@ EOF
 
 ## Delete the deployment
 ```bash
-kubectl delete deployment -n default repl-exec-connect-cluster-${CONNECTOR}
+kubectl delete deployment -n default repl-exec-connect-cluster-${TOPIC}
 ```

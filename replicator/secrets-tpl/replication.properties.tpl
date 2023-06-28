@@ -1,4 +1,4 @@
-topic.whitelist=CONNECTOR
+topic.whitelist=TOPIC
 
 topic.rename.format=${topic}
 topic.auto.create=true
