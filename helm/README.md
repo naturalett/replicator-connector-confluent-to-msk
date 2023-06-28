@@ -2,12 +2,12 @@
 
 ## Create the configuration as a secret
 ```bash
-export CONNECTOR=test-topic
+export TOPIC=test-topic
 ```
 
 ## Generate the replication.properties
 ```bash
-cat replicator/secrets-tpl/replication.properties.tpl | sed -e "s/CONNECTOR/${CONNECTOR}/" > helm/replicator-conf/replication.properties
+cat replicator/secrets-tpl/replication.properties.tpl | sed -e "s/TOPIC/${TOPIC}/" > helm/replicator-conf/replication.properties
 ```
 
 ## Generate the producer.properties
